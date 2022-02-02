@@ -1,0 +1,77 @@
+{
+    "defaultLocation": "westeurope",
+    "tags": {
+        "value": {
+          "applicationType": "Network",
+          "environment": "p",
+          "costcenter": "0451",
+          "createdby": "jeroenzaal"
+        }
+    },
+    "regions": [
+        {
+            "location": "westeurope",
+            "locationShort": "weu",
+            "hubAddressPrefix": "10.70.0.0/16",
+            "deployFw": false,
+            "deployFgtFW": true,
+            "deployVpnGw": false,
+            "deployErGw": false,
+            "deployP2SGw": false,
+            "fgtFWConfig": {
+                "AddressPrefix": "10.240.70.0/24",
+                "externalSubnet": "10.240.70.0/26",
+                "externalSubnetStartIp": "10.240.70.4",
+                "internalSubnet": "10.240.70.64/26",
+                "internalSubnetStartIp": "10.240.70.68",
+                "protectedSubnet": "10.240.70.128/26",
+                "bootstrapConfig": "config router static\nedit 5\nset dst 10.0.0.0 255.0.0.0\nset gateway 10.240.70.65\nset device port2\nnext\nedit 6\nset dst 192.168.0.0 255.255.0.0\nset gateway 10.240.70.65\nset device port2\nnext\nedit 7\nset dst 172.16.0.0 255.240.0.0\nset gateway 10.240.70.65\nset device port2\nnext\nend\n"
+            },
+            "p2sConfig": {
+                "p2sAddressPrefixes": [
+                    "10.0.4.0/22"
+                ]
+            },
+            "landingZones": {
+                "name": "production",
+                "addressPrefix": "10.71.0.0/16"
+            }
+        },
+        {
+            "location": "southeastasia",
+            "hubAddressPrefix": "10.80.0.0/16",
+            "deployFw": false,
+            "deployVpnGw": false,
+            "deployErGw": false,
+            "deployP2SGw": false,
+            "landingZones": {
+                "name": "neu-lz1",
+                "addressPrefix": "10.10.10.0/24"
+            }
+        },
+        {
+            "location": "eastus",
+            "hubAddressPrefix": "10.20.0.0/24",
+            "deployFw": true,
+            "deployVpnGw": false,
+            "deployErGw": true,
+            "deployP2SGw": false,
+            "landingZones": {
+                "name": "eus-lz1",
+                "addressPrefix": "10.20.10.0/24"
+            }
+        }
+    ],
+    "onPremSites": [
+        {
+            "location": "westeurope",
+            "addressPrefix": "172.16.0.0/22",
+            "deployVM": true
+        },
+        {
+            "location": "eastus",
+            "addressPrefix": "172.16.4.0/22",
+            "deployVM": true
+        }
+    ]
+}
