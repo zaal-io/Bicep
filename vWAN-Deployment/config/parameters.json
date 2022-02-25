@@ -4,8 +4,8 @@
         "value": {
           "applicationType": "Network",
           "environment": "p",
-          "costcenter": "0451",
-          "createdby": "jeroenzaal"
+          "costcenter": "",
+          "createdby": ""
         }
     },
     "regions": [

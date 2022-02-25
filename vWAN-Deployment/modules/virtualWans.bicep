@@ -6,7 +6,7 @@ param name string
 param wanType string = 'Standard'
 param disableVpnEncryption bool = false
 param allowBranchToBranchTraffic bool = true
-param allowVnetToVnetTraffic bool = true
+//param allowVnetToVnetTraffic bool = false //--vnet-to-vnet-traffic is deprecated in 2020-05-01
 param location string = resourceGroup().location
 param tags object = {}
 
@@ -19,7 +19,7 @@ resource vwan 'Microsoft.Network/virtualWans@2021-03-01' = {
     type: wanType
     disableVpnEncryption: disableVpnEncryption
     allowBranchToBranchTraffic: allowBranchToBranchTraffic
-    allowVnetToVnetTraffic: allowVnetToVnetTraffic
+    //allowVnetToVnetTraffic: allowVnetToVnetTraffic //--vnet-to-vnet-traffic is deprecated in 2020-05-01
   }
 }
 

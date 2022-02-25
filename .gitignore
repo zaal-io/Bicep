@@ -1,1 +1,8 @@
+# Local directories
+*/local/*
+
+# Customer parameter files
 */config/customers/*
+
+# Deployment file
+deploy.ps1
