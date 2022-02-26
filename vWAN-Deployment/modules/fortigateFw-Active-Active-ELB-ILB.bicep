@@ -1,4 +1,5 @@
 @description('Username for the FortiGate VM')
+@secure()
 param adminUsername string
 
 @description('Password for the FortiGate VM')

@@ -10,6 +10,11 @@ param subnets array = []
 
 param deployVM bool = true
 
+@secure()
+param windowsVmAdminUserName string
+@secure()
+param windowsVmAdminPassword string
+
 
 // Deploy "landing zone" VNet Resource Group
 resource landingZoneRg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -39,20 +44,14 @@ resource landingZoneServerRg 'Microsoft.Resources/resourceGroups@2021-04-01' = i
   tags: tags
 }
 
-// Reference to existing KeyVault
-resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
-  name: 'kv-deploy-p'
-  scope: resourceGroup('17a430a4-b126-44e3-ac2c-e2da167eb708', 'rg-weu-security-0451-p-001')
-}
-
 // Deploy "landing zone" Servers
 module landingZoneServer 'windowsVM.bicep' = if (deployVM) {
   name: '${landingZoneName}-vm-deploy'
   scope: landingZoneServerRg
   params: {
     hostName: 'az-${locationShort}01-${tags.environment}-ms90'
-    adminUserName: 'huismanadm'
-    adminPassword: keyVault.getSecret('fortigateDeployAdminPassword')
+    adminUserName: windowsVmAdminUserName
+    adminPassword: windowsVmAdminPassword
     subnetId: landingZoneVnet.outputs.subnets[0].id
     location: location
   }

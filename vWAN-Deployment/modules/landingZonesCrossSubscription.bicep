@@ -13,6 +13,11 @@ param hubBuiltInDefaultRouteTableResourceId string
 param hubBuiltInNoneRouteTableResourceId string
 param landingZoneRouteTableResourceId string
 
+@secure()
+param windowsVmAdminUserName string
+@secure()
+param windowsVmAdminPassword string
+
 @batchSize(1)
 module landingZonesCrossSubscription 'landingZones.bicep' = [for landingZone in landingZones: {
   name: '${landingZone.name}-rg-deploy'
@@ -25,6 +30,8 @@ module landingZonesCrossSubscription 'landingZones.bicep' = [for landingZone in 
     addressPrefix: landingZone.addressPrefix
     subnets: landingZone.subnets
     deployVM: landingZone.deployVM
+    windowsVmAdminUserName: windowsVmAdminUserName
+    windowsVmAdminPassword: windowsVmAdminPassword
   }
 }]
 

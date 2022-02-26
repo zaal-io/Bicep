@@ -2,9 +2,13 @@ param location string = resourceGroup().location
 @maxLength(15)
 param hostName string
 param subnetId string
+
+@secure()
 param adminUserName string
+
 @secure()
 param adminPassword string
+
 param windowsOsVersion string = '2022-Datacenter'
 param vmSize string = 'Standard_B2ms'
 param createPublicIP bool = false

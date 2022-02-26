@@ -93,7 +93,7 @@ module azureFirewalls 'modules/azureFirewalls.bicep' = [for (region, i) in vwanC
 // Reference to existing KeyVault
 resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
   name: 'kv-deploy-p'
-  scope: resourceGroup('17a430a4-b126-44e3-ac2c-e2da167eb708', 'rg-weu-security-0451-p-001')
+  scope: resourceGroup(subscriptionId, 'rg-weu-security-0451-p-001')
 }
 
 
@@ -112,7 +112,7 @@ module fortigates 'modules/fortigateFw-Active-Active-ELB-ILB.bicep' = [for (regi
   params: {
     adminPassword: keyVault.getSecret('fortigateDeployAdminPassword')
     fortiGateNamePrefix: 'fgt-fw-${region.locationShort}-${environmentShort}'
-    adminUsername: 'huismanadm'
+    adminUsername: keyVault.getSecret('fortigateDeployAdminUsername')
     instanceType: 'Standard_F4s'
     fortiGateAditionalCustomData: region.fwConfig.bootstrapConfig
     acceleratedNetworking: true
@@ -207,5 +207,7 @@ module landingZones 'modules/landingZonesCrossSubscription.bicep' = [for (region
     hubBuiltInDefaultRouteTableResourceId: builtInRouteTables[i].outputs.defaultRouteTableResourceId
     hubBuiltInNoneRouteTableResourceId: builtInRouteTables[i].outputs.noneRouteTableResourceId
     landingZoneRouteTableResourceId: lzRouteTable[i].outputs.resourceId
+    windowsVmAdminUserName: keyVault.getSecret('windowsServerAdminUsername')
+    windowsVmAdminPassword: keyVault.getSecret('windowsServerAdminPassword')
   }
 }]
