@@ -4,5 +4,8 @@
 # Customer parameter files
 */config/customers/*
 
+# Customer FW Rules files
+*/modules/azureFwRules/*
+
 # Deployment file
 deploy.ps1
