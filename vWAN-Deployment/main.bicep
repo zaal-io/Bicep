@@ -168,7 +168,6 @@ module nvaVNetConnection 'modules/hubVirtualNetworkConnections.bicep' = [for (re
   }
 }]
 
-
 // LANDING ZONES
 // Deploy Virtual Hub Route tables for Landing Zones
 module lzRouteTable 'modules/hubRouteTables.bicep' = [for (region, i) in vwanConfig.regions: {
@@ -214,6 +213,7 @@ module landingZones 'modules/landingZonesCrossSubscription.bicep' = [for (region
     nvaServiceVnetResourceName: region.deployFw && firewallSolution =~ 'Fortigate' ? fortigates[i].outputs.vNetName : ''
     nvaServiceVnetSubscriptionId: region.deployFw && firewallSolution =~ 'Fortigate' ? subscriptionId : ''
     nvaServiceVnetResourceGroupName: region.deployFw && firewallSolution =~ 'Fortigate' ? fgtFwRg[i].name : ''
+    nvaHubVnetConnectionResourceId: region.deployFw && firewallSolution =~ 'Fortigate' ? nvaVNetConnection[i].outputs.resourceId : ''
     defaultRouteNextHopIpAddress: region.deployFw && firewallSolution =~ 'Fortigate' ? fortigates[i].outputs.internalLoadBalancerIpAddress : ''
     windowsVmAdminUserName: keyVault.getSecret('windowsServerAdminUsername')
     windowsVmAdminPassword: keyVault.getSecret('windowsServerAdminPassword')

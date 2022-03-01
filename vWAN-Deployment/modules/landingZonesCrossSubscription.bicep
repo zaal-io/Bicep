@@ -17,6 +17,7 @@ param nvaServiceVnetResourceId string = ''
 param nvaServiceVnetResourceName string = ''
 param nvaServiceVnetSubscriptionId string = ''
 param nvaServiceVnetResourceGroupName string = ''
+param nvaHubVnetConnectionResourceId string = ''
 
 param defaultRouteNextHopIpAddress string = ''
 
@@ -24,6 +25,16 @@ param defaultRouteNextHopIpAddress string = ''
 param windowsVmAdminUserName string
 @secure()
 param windowsVmAdminPassword string
+
+var landingZoneRoutesThroughNva = [for landingZone in landingZones: {
+  name: 'NvaFwSpoke-${landingZone.name}'
+  destinationType: 'CIDR'
+  destinations: [
+    '${landingZone.addressPrefix}'
+  ]
+  nextHopType: 'ResourceId'
+  nextHop: nvaHubVnetConnectionResourceId
+}]
 
 // @batchSize(1)
 module landingZonesCrossSubscription 'landingZones.bicep' = [for landingZone in landingZones: {
@@ -68,6 +79,20 @@ module lzVNetConnection 'hubVirtualNetworkConnections.bicep' = [for (landingZone
     connectionName: '${hubName}-to-${landingZonesCrossSubscription[i].outputs.vnetName}'
   }
 }]
+
+// Set Virtual Hub Default Route tables with Routes for Spoke Vnets (Landing Zones)
+module defaultRouteTable 'hubRouteTables.bicep' = if (firewallDeployed && firewallSolution =~ 'Fortigate') {
+  scope: resourceGroup(vwanResourceGroupName)
+  name: 'vwanhub-${locationShort}-defaultRouteTable-Routes'
+  params: {
+    hubName: hubName
+    labels: [
+      'default'
+    ]
+    routes: firewallDeployed && firewallSolution =~ 'Fortigate' ? landingZoneRoutesThroughNva : []
+    routeTableName: 'defaultRouteTable'
+  }
+}
 
 output landingZonesOutput array = [for (landingZone, i) in landingZones: {
   resourceGroupId: landingZonesCrossSubscription[i].outputs.resourceGroupId

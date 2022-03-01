@@ -55,3 +55,6 @@ module wait 'wait.bicep' = [for i in range(1, 3): {
     connection
   ]
 }] */
+
+output resourceId string = connection.id
+output name string = connection.name
