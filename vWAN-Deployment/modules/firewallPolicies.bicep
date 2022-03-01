@@ -13,8 +13,8 @@ param dnsServers array = []
 param enableProxy bool = true 
 */
 
-var azureFwPolicyNetworkRules = json(loadTextContent('./azureFwRules/azureFwPolicyNetworkRules.json'))
-var azureFwPolicyApplicationRules = json(loadTextContent('./azureFwRules/azureFwPolicyAppRules.json'))
+var azureFwPolicyNetworkRules = json(loadTextContent('./azureFwRules/customers/azureFwPolicyNetworkRules.json'))
+var azureFwPolicyApplicationRules = json(loadTextContent('./azureFwRules/customers/azureFwPolicyAppRules.json'))
 
 resource parentPolicy 'Microsoft.Network/firewallPolicies@2021-02-01' = {
   name: parentPolicyName

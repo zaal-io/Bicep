@@ -5,7 +5,7 @@
 */config/customers/*
 
 # Customer FW Rules files
-*/modules/azureFwRules/*
+*/modules/azureFwRules/customers/*
 
 # Deployment file
 deploy.ps1
