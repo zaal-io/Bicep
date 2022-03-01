@@ -18,6 +18,8 @@ param nvaServiceVnetResourceName string = ''
 param nvaServiceVnetSubscriptionId string = ''
 param nvaServiceVnetResourceGroupName string = ''
 
+param defaultRouteNextHopIpAddress string = ''
+
 @secure()
 param windowsVmAdminUserName string
 @secure()
@@ -41,6 +43,7 @@ module landingZonesCrossSubscription 'landingZones.bicep' = [for landingZone in 
     nvaServiceVnetResourceName: nvaServiceVnetResourceName
     nvaServiceVnetSubscriptionId: nvaServiceVnetSubscriptionId
     nvaServiceVnetResourceGroupName: nvaServiceVnetResourceGroupName
+    defaultRouteNextHopIpAddress: defaultRouteNextHopIpAddress
   }
 }]
 

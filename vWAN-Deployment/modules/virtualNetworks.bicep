@@ -2,14 +2,35 @@ param vnetName string
 param addressPrefix string
 param subnets array = []
 param dnsServers array = []
+
 param peerName string = ''
 param peerId string = ''
 param peerSubscriptionId string = ''
 param peerResourceGroupName string = ''
+
+param defaultRouteNextHopIpAddress string = ''
+
 param tags object = {}
 param location string = resourceGroup().location
 param locationShort string
 
+resource routeTable 'Microsoft.Network/routeTables@2021-03-01' = if (defaultRouteNextHopIpAddress != '') {
+  name: 'rt-vnet-${locationShort}-${tags.environment}-nva-001'
+  location: location
+  tags: tags
+  properties: {
+    routes: [
+      {
+        name: 'toFortigate'
+        properties: {
+          addressPrefix: '0.0.0.0/0'
+          nextHopType: 'VirtualAppliance'
+          nextHopIpAddress: defaultRouteNextHopIpAddress
+        }
+      }
+    ]
+  }
+}
 
 resource nsg 'Microsoft.Network/networkSecurityGroups@2021-02-01' = [for subnet in subnets: {
   name: 'nsg-${locationShort}-${tags.environment}-${subnet.name}-001'
@@ -23,6 +44,9 @@ var Subnets = [for (subnet, i) in subnets: {
       networkSecurityGroup: {
         id: nsg[i].id
       }
+      routeTable: any(defaultRouteNextHopIpAddress != '' ? {
+        id : routeTable.id
+      } : json('null'))
     }
 }]
 

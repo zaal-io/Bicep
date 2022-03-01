@@ -15,6 +15,8 @@ param nvaServiceVnetResourceName string = ''
 param nvaServiceVnetSubscriptionId string = ''
 param nvaServiceVnetResourceGroupName string = ''
 
+param defaultRouteNextHopIpAddress string = ''
+
 @secure()
 param windowsVmAdminUserName string
 @secure()
@@ -40,6 +42,7 @@ module landingZoneVnet 'virtualNetworks.bicep' = {
     peerName: nvaServiceVnetResourceName
     peerSubscriptionId: nvaServiceVnetSubscriptionId
     peerResourceGroupName: nvaServiceVnetResourceGroupName
+    defaultRouteNextHopIpAddress: defaultRouteNextHopIpAddress
     locationShort: locationShort
     location: location
     tags: tags

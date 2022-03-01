@@ -214,6 +214,7 @@ module landingZones 'modules/landingZonesCrossSubscription.bicep' = [for (region
     nvaServiceVnetResourceName: region.deployFw && firewallSolution =~ 'Fortigate' ? fortigates[i].outputs.vNetName : ''
     nvaServiceVnetSubscriptionId: region.deployFw && firewallSolution =~ 'Fortigate' ? subscriptionId : ''
     nvaServiceVnetResourceGroupName: region.deployFw && firewallSolution =~ 'Fortigate' ? fgtFwRg[i].name : ''
+    defaultRouteNextHopIpAddress: region.deployFw && firewallSolution =~ 'Fortigate' ? fortigates[i].outputs.internalLoadBalancerIpAddress : ''
     windowsVmAdminUserName: keyVault.getSecret('windowsServerAdminUsername')
     windowsVmAdminPassword: keyVault.getSecret('windowsServerAdminPassword')
   }
