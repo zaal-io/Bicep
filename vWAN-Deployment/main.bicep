@@ -3,7 +3,7 @@ targetScope = 'subscription'
 
 // Load VWAN Config file. 
 //var vwanConfig = json(loadTextContent('./config/customers/parameters.json'))
-var vwanConfig = json(loadTextContent('./config/customers/parameters-1region.json'))
+var vwanConfig = json(loadTextContent('./config/customers/parameters-2region.json'))
 var location = vwanConfig.defaultLocation
 var locationShort = vwanConfig.defaultLocationShort
 var environmentShort = first(vwanConfig.environment)
@@ -161,6 +161,8 @@ module nvaVNetConnection 'modules/hubVirtualNetworkConnections.bicep' = [for (re
     propagatedRouteTableIds: [
       builtInRouteTables[i].outputs.defaultRouteTableResourceId
     ]
+    spokeVnets: region.landingZones
+    nextHopIpAddress: fortigates[i].outputs.internalLoadBalancerIpAddress
     vnetId: fortigates[i].outputs.vNetId
     connectionName: '${virtualHubs[i].outputs.resourceName}-to-${fortigates[i].outputs.vNetName}'
   }
@@ -193,6 +195,7 @@ module lzRouteTable 'modules/hubRouteTables.bicep' = [for (region, i) in vwanCon
 }]
 
 // Deploy Landing Zones at subscription level but in a different subscription.
+@batchSize(1)
 module landingZones 'modules/landingZonesCrossSubscription.bicep' = [for (region, i) in vwanConfig.regions: {
   name: '${region.locationShort}-landingzones-deploy'
   scope: subscription(subscriptionId)
@@ -206,7 +209,11 @@ module landingZones 'modules/landingZonesCrossSubscription.bicep' = [for (region
     firewallSolution: firewallSolution
     hubBuiltInDefaultRouteTableResourceId: builtInRouteTables[i].outputs.defaultRouteTableResourceId
     hubBuiltInNoneRouteTableResourceId: builtInRouteTables[i].outputs.noneRouteTableResourceId
-    landingZoneRouteTableResourceId: lzRouteTable[i].outputs.resourceId
+    landingZoneRouteTableResourceId: region.deployFw && firewallSolution =~ 'AzureFw' ? lzRouteTable[i].outputs.resourceId : builtInRouteTables[i].outputs.defaultRouteTableResourceId
+    nvaServiceVnetResourceId: region.deployFw && firewallSolution =~ 'Fortigate' ? fortigates[i].outputs.vNetId : ''
+    nvaServiceVnetResourceName: region.deployFw && firewallSolution =~ 'Fortigate' ? fortigates[i].outputs.vNetName : ''
+    nvaServiceVnetSubscriptionId: region.deployFw && firewallSolution =~ 'Fortigate' ? subscriptionId : ''
+    nvaServiceVnetResourceGroupName: region.deployFw && firewallSolution =~ 'Fortigate' ? fgtFwRg[i].name : ''
     windowsVmAdminUserName: keyVault.getSecret('windowsServerAdminUsername')
     windowsVmAdminPassword: keyVault.getSecret('windowsServerAdminPassword')
   }

@@ -2,6 +2,10 @@ param vnetName string
 param addressPrefix string
 param subnets array = []
 param dnsServers array = []
+param peerName string = ''
+param peerId string = ''
+param peerSubscriptionId string = ''
+param peerResourceGroupName string = ''
 param tags object = {}
 param location string = resourceGroup().location
 param locationShort string
@@ -36,6 +40,35 @@ resource vnet 'Microsoft.Network/virtualNetworks@2020-08-01' = {
       dnsServers: dnsServers
     }
     subnets: Subnets
+  }
+}
+
+// Create peering to service vnet
+resource peering 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-03-01' = if (peerName != '' && peerId != '' && peerSubscriptionId != '' && peerResourceGroupName != '') {
+  name: 'peeredTo-${peerName}'
+  parent: vnet
+  properties: {
+    allowVirtualNetworkAccess: true
+    allowForwardedTraffic: false
+    allowGatewayTransit: false
+    useRemoteGateways: false
+    remoteVirtualNetwork: {
+      id: peerId
+    }
+  }
+}
+
+// Create a peering to this vnet in service vnet
+module remotePeering 'virtualNetworkPeerings.bicep' = if (peerName != '' && peerId != '' && peerSubscriptionId != '' && peerResourceGroupName != '') {
+  name: 'peeredTo-${vnet.name}'
+  scope: resourceGroup(peerSubscriptionId, peerResourceGroupName)
+  dependsOn: [
+    peering
+  ]
+  params: {
+    peerId: vnet.id
+    peerName: vnet.name
+    vNetName: peerName
   }
 }
 

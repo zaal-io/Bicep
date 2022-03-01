@@ -4,9 +4,19 @@ param vnetId string
 param associatedRouteTableId string
 param propagatedRouteTableLabels array = []
 param propagatedRouteTableIds array = []
+param spokeVnets array = []
+param nextHopIpAddress string = ''
 
 var routeTableIds = [for id in propagatedRouteTableIds: {
   id: id
+}]
+
+var staticRoutes = [for spokeVnet in spokeVnets: {
+  name: spokeVnet.name
+  addressPrefixes: [
+    '${spokeVnet.addressPrefix}'
+  ]            
+  nextHopIpAddress: nextHopIpAddress
 }]
 
 resource vHub 'Microsoft.Network/virtualHubs@2021-03-01' existing = {
@@ -29,6 +39,9 @@ resource connection 'Microsoft.Network/virtualHubs/hubVirtualNetworkConnections@
       propagatedRouteTables: {
         labels: propagatedRouteTableLabels  == [] ? json('null') : propagatedRouteTableLabels
         ids: propagatedRouteTableIds  == [] ? json('null') : routeTableIds
+      }
+      vnetRoutes:{
+        staticRoutes: staticRoutes == [] ? json('null') : staticRoutes
       }
     }
   }

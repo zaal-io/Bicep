@@ -10,6 +10,11 @@ param subnets array = []
 
 param deployVM bool = true
 
+param nvaServiceVnetResourceId string = ''
+param nvaServiceVnetResourceName string = ''
+param nvaServiceVnetSubscriptionId string = ''
+param nvaServiceVnetResourceGroupName string = ''
+
 @secure()
 param windowsVmAdminUserName string
 @secure()
@@ -31,6 +36,10 @@ module landingZoneVnet 'virtualNetworks.bicep' = {
     addressPrefix: addressPrefix
     vnetName: 'vnet-${locationShort}-${first(tags.environment)}-${landingZoneName}-001'
     subnets: subnets
+    peerId: nvaServiceVnetResourceId
+    peerName: nvaServiceVnetResourceName
+    peerSubscriptionId: nvaServiceVnetSubscriptionId
+    peerResourceGroupName: nvaServiceVnetResourceGroupName
     locationShort: locationShort
     location: location
     tags: tags

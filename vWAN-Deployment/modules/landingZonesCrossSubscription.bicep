@@ -13,12 +13,17 @@ param hubBuiltInDefaultRouteTableResourceId string
 param hubBuiltInNoneRouteTableResourceId string
 param landingZoneRouteTableResourceId string
 
+param nvaServiceVnetResourceId string = ''
+param nvaServiceVnetResourceName string = ''
+param nvaServiceVnetSubscriptionId string = ''
+param nvaServiceVnetResourceGroupName string = ''
+
 @secure()
 param windowsVmAdminUserName string
 @secure()
 param windowsVmAdminPassword string
 
-@batchSize(1)
+// @batchSize(1)
 module landingZonesCrossSubscription 'landingZones.bicep' = [for landingZone in landingZones: {
   name: '${landingZone.name}-rg-deploy'
   scope: subscription(landingZone.subscriptionId)
@@ -32,6 +37,10 @@ module landingZonesCrossSubscription 'landingZones.bicep' = [for landingZone in 
     deployVM: landingZone.deployVM
     windowsVmAdminUserName: windowsVmAdminUserName
     windowsVmAdminPassword: windowsVmAdminPassword
+    nvaServiceVnetResourceId: nvaServiceVnetResourceId
+    nvaServiceVnetResourceName: nvaServiceVnetResourceName
+    nvaServiceVnetSubscriptionId: nvaServiceVnetSubscriptionId
+    nvaServiceVnetResourceGroupName: nvaServiceVnetResourceGroupName
   }
 }]
 
